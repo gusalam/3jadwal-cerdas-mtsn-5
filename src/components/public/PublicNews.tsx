@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Newspaper } from "lucide-react";
 
 export const PublicNews = () => {
@@ -21,22 +22,38 @@ export const PublicNews = () => {
   if (posts.length === 0) return null;
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-        <Newspaper className="w-5 h-5 text-primary" /> Berita Terbaru
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <section id="berita" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-1.5 h-8 bg-primary rounded-full" />
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">Berita Terbaru</h2>
+        <Newspaper className="w-5 h-5 text-primary" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {posts.map((p: any) => (
-          <Card key={p.id} className="overflow-hidden hover:shadow-md transition-shadow">
-            {p.image_url && (
-              <img src={p.image_url} alt={p.title} className="w-full h-36 object-cover" loading="lazy" />
+          <Card key={p.id} className="border-0 shadow-md overflow-hidden group hover:shadow-xl transition-all hover:-translate-y-1">
+            {p.image_url ? (
+              <div className="overflow-hidden">
+                <img
+                  src={p.image_url}
+                  alt={p.title}
+                  className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-44 bg-muted flex items-center justify-center">
+                <Newspaper className="w-10 h-10 text-muted-foreground/30" />
+              </div>
             )}
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-sm text-foreground line-clamp-2">{p.title}</h3>
-              {p.content && <p className="text-xs text-muted-foreground mt-1 line-clamp-3">{p.content}</p>}
-              <p className="text-[10px] text-muted-foreground/60 mt-2">
+            <CardContent className="p-4 space-y-2">
+              <h3 className="font-bold text-sm text-foreground line-clamp-2 leading-snug">{p.title}</h3>
+              <p className="text-xs text-muted-foreground">
                 {new Date(p.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
               </p>
+              {p.content && <p className="text-xs text-muted-foreground line-clamp-2">{p.content}</p>}
+              <Button variant="outline" size="sm" className="rounded-full text-xs w-full mt-2">
+                Selengkapnya →
+              </Button>
             </CardContent>
           </Card>
         ))}
