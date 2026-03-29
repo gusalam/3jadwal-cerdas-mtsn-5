@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import PublicSchedulePage from "./pages/PublicSchedulePage";
+import JadwalPublikPage from "./pages/JadwalPublikPage";
 import Index from "./pages/Index";
 import GuruPage from "./pages/GuruPage";
 import MapelPage from "./pages/MapelPage";
@@ -32,6 +33,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<PublicSchedulePage />} />
+          <Route path="/jadwal-publik" element={<JadwalPublikPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/guru" element={<ProtectedRoute><GuruPage /></ProtectedRoute>} />

@@ -21,19 +21,27 @@ export const PublicAnnouncements = () => {
   if (announcements.length === 0) return null;
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-        <Bell className="w-5 h-5 text-amber-500" /> Pengumuman
-      </h2>
-      <div className="space-y-2">
+    <section id="pengumuman" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-1.5 h-8 bg-secondary rounded-full" />
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">Pengumuman</h2>
+        <Bell className="w-5 h-5 text-secondary" />
+      </div>
+      <div className="space-y-3">
         {announcements.map((a: any) => (
-          <Card key={a.id} className="border-l-4 border-l-amber-500">
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-sm text-foreground">{a.title}</h3>
-              {a.description && <p className="text-xs text-muted-foreground mt-1">{a.description}</p>}
-              <p className="text-[10px] text-muted-foreground/60 mt-2">
-                {new Date(a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-              </p>
+          <Card key={a.id} className="border-0 shadow-sm border-l-4 border-l-secondary hover:shadow-md transition-shadow">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="font-bold text-sm sm:text-base text-foreground">{a.title}</h3>
+                  {a.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground shrink-0">
+                  {new Date(a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                </span>
+              </div>
             </CardContent>
           </Card>
         ))}
