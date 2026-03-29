@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { v4 as uuidv4 } from "crypto";
+
 
 /**
  * Upload a file to Supabase Storage and return the public URL.
