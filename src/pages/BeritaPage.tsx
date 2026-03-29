@@ -16,12 +16,15 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { usePagination } from "@/hooks/usePagination";
 import { TablePagination } from "@/components/TablePagination";
+import { ImageUpload } from "@/components/ImageUpload";
+import { uploadMedia, deleteMedia } from "@/lib/uploadMedia";
 
 const BeritaPage = () => {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ title: "", content: "", image_url: "", category: "berita", is_published: true });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [search, setSearch] = useState("");
 
   const { data: posts = [], isLoading } = useQuery({
@@ -35,11 +38,25 @@ const BeritaPage = () => {
   const save = useMutation({
     mutationFn: async () => {
       if (!form.title.trim()) throw new Error("Judul wajib diisi");
+
+      let imageUrl = form.image_url;
+
+      // Upload new image if selected
+      if (imageFile) {
+        imageUrl = await uploadMedia(imageFile, "berita");
+      }
+
+      const payload = { ...form, image_url: imageUrl || null };
+
       if (editing) {
-        const { error } = await supabase.from("posts").update(form).eq("id", editing.id);
+        // Delete old image if replaced
+        if (imageFile && editing.image_url) {
+          await deleteMedia(editing.image_url);
+        }
+        const { error } = await supabase.from("posts").update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("posts").insert(form);
+        const { error } = await supabase.from("posts").insert(payload);
         if (error) throw error;
       }
     },
@@ -47,14 +64,18 @@ const BeritaPage = () => {
       qc.invalidateQueries({ queryKey: ["admin-posts"] });
       qc.invalidateQueries({ queryKey: ["posts-count"] });
       setOpen(false);
+      setImageFile(null);
       toast.success("Berhasil disimpan");
     },
     onError: (e: any) => toast.error(e.message),
   });
 
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("posts").delete().eq("id", id);
+    mutationFn: async (post: any) => {
+      if (post.image_url) {
+        await deleteMedia(post.image_url);
+      }
+      const { error } = await supabase.from("posts").delete().eq("id", post.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -74,8 +95,8 @@ const BeritaPage = () => {
   const pagination = usePagination(filteredPosts);
   useEffect(() => { pagination.reset(); }, [search]);
 
-  const openNew = () => { setEditing(null); setForm({ title: "", content: "", image_url: "", category: "berita", is_published: true }); setOpen(true); };
-  const openEdit = (p: any) => { setEditing(p); setForm({ title: p.title, content: p.content ?? "", image_url: p.image_url ?? "", category: p.category, is_published: p.is_published }); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ title: "", content: "", image_url: "", category: "berita", is_published: true }); setImageFile(null); setOpen(true); };
+  const openEdit = (p: any) => { setEditing(p); setForm({ title: p.title, content: p.content ?? "", image_url: p.image_url ?? "", category: p.category, is_published: p.is_published }); setImageFile(null); setOpen(true); };
 
   return (
     <AppLayout>
@@ -148,7 +169,7 @@ const BeritaPage = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Batal</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => remove.mutate(p.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              <AlertDialogAction onClick={() => remove.mutate(p)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                                 Hapus
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -179,13 +200,13 @@ const BeritaPage = () => {
               <Label>Konten</Label>
               <Textarea rows={5} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Isi berita..." />
             </div>
-            <div className="space-y-2">
-              <Label>URL Gambar</Label>
-              <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
-              {form.image_url && (
-                <img src={form.image_url} alt="Preview" className="w-full h-32 object-cover rounded-lg border" />
-              )}
-            </div>
+            <ImageUpload
+              currentUrl={form.image_url}
+              onUrlChange={(url) => setForm({ ...form, image_url: url })}
+              onFileSelect={setImageFile}
+              selectedFile={imageFile}
+              label="Gambar Berita"
+            />
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
               <Switch checked={form.is_published} onCheckedChange={(v) => setForm({ ...form, is_published: v })} />
               <Label className="cursor-pointer">Publikasikan</Label>
@@ -194,7 +215,7 @@ const BeritaPage = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
             <Button onClick={() => save.mutate()} disabled={!form.title.trim() || save.isPending}>
-              {save.isPending ? "Menyimpan..." : "Simpan"}
+              {save.isPending ? "Mengupload..." : "Simpan"}
             </Button>
           </DialogFooter>
         </DialogContent>
