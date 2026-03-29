@@ -14,6 +14,7 @@ import {
   Newspaper,
   Bell,
   Image,
+  ImageIcon,
 } from "lucide-react";
 import { useState } from "react";
 import schoolLogo from "@/assets/logo.png";
@@ -64,9 +65,11 @@ const dataMenu = [
 ];
 
 const cmsMenu = [
-  { title: "Berita", url: "/berita", icon: Newspaper, adminOnly: true },
-  { title: "Pengumuman", url: "/pengumuman", icon: Bell, adminOnly: true },
-  { title: "Galeri", url: "/galeri", icon: Image, adminOnly: true },
+  { title: "Berita", url: "/cms-berita", icon: Newspaper, adminOnly: true },
+  { title: "Pengumuman", url: "/cms-pengumuman", icon: Bell, adminOnly: true },
+  { title: "Galeri", url: "/cms-galeri", icon: Image, adminOnly: true },
+  { title: "Profil", url: "/cms-profil", icon: School, adminOnly: true },
+  { title: "Banner", url: "/cms-banner", icon: ImageIcon, adminOnly: true },
 ];
 
 const settingsMenu = [
