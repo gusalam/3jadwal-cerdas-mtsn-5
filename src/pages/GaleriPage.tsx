@@ -10,12 +10,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, ImageIcon } from "lucide-react";
+import { ImageUpload } from "@/components/ImageUpload";
+import { uploadMedia, deleteMedia } from "@/lib/uploadMedia";
 
 const GaleriPage = () => {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ image_url: "", caption: "" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-gallery"],
@@ -27,26 +30,42 @@ const GaleriPage = () => {
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!form.image_url.trim()) throw new Error("URL gambar wajib diisi");
+      let imageUrl = form.image_url;
+
+      if (imageFile) {
+        imageUrl = await uploadMedia(imageFile, "galeri");
+      }
+
+      if (!imageUrl.trim()) throw new Error("Gambar wajib diupload");
+
+      const payload = { image_url: imageUrl, caption: form.caption || null };
+
       if (editing) {
-        const { error } = await supabase.from("gallery").update(form).eq("id", editing.id);
+        if (imageFile && editing.image_url) {
+          await deleteMedia(editing.image_url);
+        }
+        const { error } = await supabase.from("gallery").update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("gallery").insert(form);
+        const { error } = await supabase.from("gallery").insert(payload);
         if (error) throw error;
       }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-gallery"] });
       setOpen(false);
+      setImageFile(null);
       toast.success("Berhasil disimpan");
     },
     onError: (e: any) => toast.error(e.message),
   });
 
   const remove = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("gallery").delete().eq("id", id);
+    mutationFn: async (item: any) => {
+      if (item.image_url) {
+        await deleteMedia(item.image_url);
+      }
+      const { error } = await supabase.from("gallery").delete().eq("id", item.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -56,8 +75,8 @@ const GaleriPage = () => {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const openNew = () => { setEditing(null); setForm({ image_url: "", caption: "" }); setOpen(true); };
-  const openEdit = (g: any) => { setEditing(g); setForm({ image_url: g.image_url, caption: g.caption ?? "" }); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ image_url: "", caption: "" }); setImageFile(null); setOpen(true); };
+  const openEdit = (g: any) => { setEditing(g); setForm({ image_url: g.image_url, caption: g.caption ?? "" }); setImageFile(null); setOpen(true); };
 
   return (
     <AppLayout>
@@ -126,7 +145,7 @@ const GaleriPage = () => {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Batal</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => remove.mutate(g.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          <AlertDialogAction onClick={() => remove.mutate(g)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             Hapus
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -146,25 +165,23 @@ const GaleriPage = () => {
             <DialogTitle>{editing ? "Edit Foto" : "Tambah Foto"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>URL Gambar <span className="text-destructive">*</span></Label>
-              <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
-            </div>
+            <ImageUpload
+              currentUrl={form.image_url}
+              onUrlChange={(url) => setForm({ ...form, image_url: url })}
+              onFileSelect={setImageFile}
+              selectedFile={imageFile}
+              label="Foto"
+              required
+            />
             <div className="space-y-2">
               <Label>Caption</Label>
               <Input value={form.caption} onChange={(e) => setForm({ ...form, caption: e.target.value })} placeholder="Keterangan foto" />
             </div>
-            {form.image_url && (
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Preview</Label>
-                <img src={form.image_url} alt="Preview" className="w-full h-40 object-cover rounded-lg border" />
-              </div>
-            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
-            <Button onClick={() => save.mutate()} disabled={!form.image_url.trim() || save.isPending}>
-              {save.isPending ? "Menyimpan..." : "Simpan"}
+            <Button onClick={() => save.mutate()} disabled={(!form.image_url.trim() && !imageFile) || save.isPending}>
+              {save.isPending ? "Mengupload..." : "Simpan"}
             </Button>
           </DialogFooter>
         </DialogContent>
