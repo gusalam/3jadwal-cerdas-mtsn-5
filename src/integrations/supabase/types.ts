@@ -62,6 +62,36 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          sort_order: number
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       classes: {
         Row: {
           created_at: string
@@ -220,6 +250,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_profile: {
+        Row: {
+          description: string | null
+          history: string | null
+          id: string
+          image_url: string | null
+          mission: string | null
+          title: string
+          updated_at: string
+          vision: string | null
+        }
+        Insert: {
+          description?: string | null
+          history?: string | null
+          id?: string
+          image_url?: string | null
+          mission?: string | null
+          title?: string
+          updated_at?: string
+          vision?: string | null
+        }
+        Update: {
+          description?: string | null
+          history?: string | null
+          id?: string
+          image_url?: string | null
+          mission?: string | null
+          title?: string
+          updated_at?: string
+          vision?: string | null
+        }
+        Relationships: []
       }
       special_events: {
         Row: {
