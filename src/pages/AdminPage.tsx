@@ -97,7 +97,7 @@ const AdminPage = () => {
           </Button>
         </div>
 
-        <Card>
+        <Card className="border-0 shadow-md">
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
               <ShieldCheck className="w-4 h-4" /> Daftar User & Role
