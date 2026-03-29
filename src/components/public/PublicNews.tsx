@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const PublicNews = () => {
   const { data: posts = [] } = useQuery({
@@ -51,9 +52,11 @@ export const PublicNews = () => {
                 {new Date(p.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
               </p>
               {p.content && <p className="text-xs text-muted-foreground line-clamp-2">{p.content}</p>}
-              <Button variant="outline" size="sm" className="rounded-full text-xs w-full mt-2">
-                Selengkapnya →
-              </Button>
+              <Link to={`/berita/${p.id}`}>
+                <Button variant="outline" size="sm" className="rounded-full text-xs w-full mt-2">
+                  Selengkapnya →
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         ))}

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const PublicAnnouncements = () => {
   const { data: announcements = [] } = useQuery({
@@ -29,21 +30,23 @@ export const PublicAnnouncements = () => {
       </div>
       <div className="space-y-3">
         {announcements.map((a: any) => (
-          <Card key={a.id} className="border-0 shadow-sm border-l-4 border-l-secondary hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="font-bold text-sm sm:text-base text-foreground">{a.title}</h3>
-                  {a.description && (
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>
-                  )}
+          <Link key={a.id} to={`/pengumuman/${a.id}`}>
+            <Card className="border-0 shadow-sm border-l-4 border-l-secondary hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-bold text-sm sm:text-base text-foreground">{a.title}</h3>
+                    {a.description && (
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {new Date(a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
                 </div>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {new Date(a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
     </section>

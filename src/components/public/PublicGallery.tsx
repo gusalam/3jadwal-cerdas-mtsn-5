@@ -1,6 +1,8 @@
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageIcon } from "lucide-react";
+import { GalleryLightbox } from "./GalleryLightbox";
 
 export const PublicGallery = () => {
   const { data: photos = [] } = useQuery({
@@ -10,11 +12,32 @@ export const PublicGallery = () => {
         .from("gallery")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(8);
+        .limit(12);
       return data ?? [];
     },
     refetchInterval: 60000,
   });
+
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // Mobile auto-slider
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (photos.length <= 1 || paused) return;
+    intervalRef.current = setInterval(() => {
+      setSlideIndex((i) => (i + 1) % photos.length);
+    }, 4000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [photos.length, paused]);
+
+  const openLightbox = useCallback((i: number) => {
+    setLightboxIndex(i);
+    setLightboxOpen(true);
+  }, []);
 
   if (photos.length === 0) return null;
 
@@ -25,9 +48,53 @@ export const PublicGallery = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Galeri Foto</h2>
         <ImageIcon className="w-5 h-5 text-secondary" />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {photos.map((photo: any) => (
-          <div key={photo.id} className="group relative overflow-hidden rounded-xl shadow-md aspect-square">
+
+      {/* Mobile slider */}
+      <div
+        className="sm:hidden relative overflow-hidden rounded-xl"
+        onTouchStart={() => setPaused(true)}
+        onTouchEnd={() => setPaused(false)}
+      >
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+        >
+          {photos.map((photo: any, i: number) => (
+            <div key={photo.id} className="min-w-full aspect-square relative cursor-pointer" onClick={() => openLightbox(i)}>
+              <img
+                src={photo.image_url}
+                alt={photo.caption ?? "Galeri"}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              {photo.caption && (
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-white text-xs font-medium line-clamp-1">{photo.caption}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Dots */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {photos.map((_: any, i: number) => (
+            <button
+              key={i}
+              className={`w-2 h-2 rounded-full transition-colors ${i === slideIndex ? "bg-primary" : "bg-muted-foreground/30"}`}
+              onClick={() => setSlideIndex(i)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop grid */}
+      <div className="hidden sm:grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        {photos.map((photo: any, i: number) => (
+          <div
+            key={photo.id}
+            className="group relative overflow-hidden rounded-xl shadow-md aspect-square cursor-pointer"
+            onClick={() => openLightbox(i)}
+          >
             <img
               src={photo.image_url}
               alt={photo.caption ?? "Galeri MTsN 5 Jakarta"}
@@ -44,6 +111,13 @@ export const PublicGallery = () => {
           </div>
         ))}
       </div>
+
+      <GalleryLightbox
+        photos={photos}
+        initialIndex={lightboxIndex}
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+      />
     </section>
   );
 };
