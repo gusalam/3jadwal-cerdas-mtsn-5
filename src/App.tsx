@@ -22,6 +22,11 @@ import PengumumanPage from "./pages/PengumumanPage";
 import GaleriPage from "./pages/GaleriPage";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
+import BeritaDetailPage from "./pages/BeritaDetailPage";
+import PengumumanDetailPage from "./pages/PengumumanDetailPage";
+import ProfilPage from "./pages/ProfilPage";
+import ProfilCmsPage from "./pages/ProfilCmsPage";
+import BannerCmsPage from "./pages/BannerCmsPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +39,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<PublicSchedulePage />} />
           <Route path="/jadwal-publik" element={<JadwalPublikPage />} />
+          <Route path="/berita/:id" element={<BeritaDetailPage />} />
+          <Route path="/pengumuman/:id" element={<PengumumanDetailPage />} />
+          <Route path="/profil" element={<ProfilPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/guru" element={<ProtectedRoute><GuruPage /></ProtectedRoute>} />
@@ -46,9 +54,11 @@ const App = () => (
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
           <Route path="/tahun-ajaran" element={<ProtectedRoute><TahunAjaranPage /></ProtectedRoute>} />
           <Route path="/kegiatan" element={<ProtectedRoute><KegiatanPage /></ProtectedRoute>} />
-          <Route path="/berita" element={<ProtectedRoute><BeritaPage /></ProtectedRoute>} />
-          <Route path="/pengumuman" element={<ProtectedRoute><PengumumanPage /></ProtectedRoute>} />
-          <Route path="/galeri" element={<ProtectedRoute><GaleriPage /></ProtectedRoute>} />
+          <Route path="/cms-berita" element={<ProtectedRoute><BeritaPage /></ProtectedRoute>} />
+          <Route path="/cms-pengumuman" element={<ProtectedRoute><PengumumanPage /></ProtectedRoute>} />
+          <Route path="/cms-galeri" element={<ProtectedRoute><GaleriPage /></ProtectedRoute>} />
+          <Route path="/cms-profil" element={<ProtectedRoute><ProfilCmsPage /></ProtectedRoute>} />
+          <Route path="/cms-banner" element={<ProtectedRoute><BannerCmsPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
