@@ -156,7 +156,7 @@ const GuruPage = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Cari guru atau mata pelajaran..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
         </div>
-        <Card>
+        <Card className="border-0 shadow-md">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
