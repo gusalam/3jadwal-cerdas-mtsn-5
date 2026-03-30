@@ -43,7 +43,7 @@ export const PublicFooter = () => (
             </a>
             <div className="flex items-start gap-2 opacity-80">
               <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>Jl. Mardani Raya No. 25, Jakarta Pusat</span>
+              <span>Jl. Mardani Raya No. 25, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10520</span>
             </div>
           </div>
         </div>
@@ -70,10 +70,31 @@ export const PublicFooter = () => (
           </div>
         </div>
 
-        {/* Sosial Media */}
+        {/* Lokasi & Sosial Media */}
         <div className="space-y-4">
-          <h4 className="font-bold text-sm border-b border-primary-foreground/20 pb-2">Ikuti Kami</h4>
-          <div className="flex gap-3">
+          <h4 className="font-bold text-sm border-b border-primary-foreground/20 pb-2">Lokasi & Sosial Media</h4>
+
+          {/* Map embed */}
+          <div className="rounded-xl overflow-hidden border border-primary-foreground/10">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.86589!3d-6.175110!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b12d%3A0x3d2ad6e1e0e9bcc8!2sMTsN%205%20Jakarta!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+              className="w-full h-32 border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Lokasi MTsN 5 Jakarta"
+            />
+          </div>
+
+          <a
+            href="https://maps.app.goo.gl/4fKTCkq4xWcBSwQMA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs opacity-80 hover:opacity-100 transition-opacity"
+          >
+            <MapPin className="w-3 h-3" /> Lihat di Google Maps →
+          </a>
+
+          <div className="flex gap-3 pt-1">
             <a href="https://www.instagram.com/mtsn5jkt" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-primary-foreground/15 hover:bg-primary-foreground/25 flex items-center justify-center transition-colors">
               <Instagram className="w-4 h-4" />
             </a>
@@ -84,25 +105,25 @@ export const PublicFooter = () => (
               <Mail className="w-4 h-4" />
             </a>
           </div>
-
-          {/* Mini map */}
-          <div className="rounded-xl overflow-hidden border border-primary-foreground/10">
-            <iframe
-              src="https://maps.google.com/maps?q=MTsN%205%20Jakarta&t=&z=15&ie=UTF8&iwloc=&output=embed"
-              className="w-full h-32 border-0"
-              loading="lazy"
-              title="Lokasi MTsN 5 Jakarta"
-            />
-          </div>
         </div>
       </div>
     </div>
 
     {/* Bottom bar */}
     <div className="border-t border-primary-foreground/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs opacity-60">
-        <p>© {new Date().getFullYear()} MTsN 5 Jakarta. All rights reserved.</p>
-        <p>e-Jadwal Digital Platform</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col items-center gap-2 text-xs opacity-60">
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-1">
+          <p>© {new Date().getFullYear()} MTsN 5 Jakarta. All rights reserved.</p>
+          <p>e-Jadwal Digital Platform</p>
+        </div>
+        <a
+          href="https://tretandevelopment.web.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[12px] opacity-70 hover:opacity-100 transition-opacity"
+        >
+          Website dikembangkan oleh Tretan Development
+        </a>
       </div>
     </div>
   </footer>
