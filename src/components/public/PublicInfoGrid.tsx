@@ -18,31 +18,26 @@ export const PublicInfoGrid = () => {
 
   return (
     <section id="tentang" ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-      {/* Full-width photo */}
-      {profile?.image_url && (
-        <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
-          <img
-            src={profile.image_url}
-            alt="MTsN 5 Jakarta"
-            className="w-full aspect-video object-cover"
-            loading="lazy"
-          />
-        </div>
-      )}
-
-      {/* 3-column card grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Tentang Kami */}
-        <Card style={stagger.getItemStyle(0)} className="border-0 shadow-md overflow-hidden group rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+        {/* Tentang Kami — foto + card menyatu */}
+        <div style={stagger.getItemStyle(0)} className="rounded-2xl overflow-hidden shadow-md hover:-translate-y-1 hover:shadow-xl transition-all duration-300 bg-card flex flex-col">
+          {profile?.image_url && (
+            <img
+              src={profile.image_url}
+              alt="MTsN 5 Jakarta"
+              className="w-full aspect-video object-cover"
+              loading="lazy"
+            />
+          )}
           <div className="h-1.5 bg-primary" />
-          <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
+          <div className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <School className="w-5 h-5 text-primary" />
               </div>
               <h3 className="text-lg font-bold text-foreground">Tentang Kami</h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4 flex-1">
               {profile?.description || "Madrasah Tsanawiyah Negeri 5 Jakarta adalah lembaga pendidikan Islam yang berkomitmen mencetak generasi unggul."}
             </p>
             <Link to="/profil">
@@ -50,11 +45,11 @@ export const PublicInfoGrid = () => {
                 Baca Selengkapnya →
               </Button>
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Info Akademik */}
-        <Card style={stagger.getItemStyle(1)} className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+        <Card style={stagger.getItemStyle(1)} className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col">
           <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
@@ -72,7 +67,6 @@ export const PublicInfoGrid = () => {
             </Link>
           </CardContent>
         </Card>
-
       </div>
     </section>
   );
