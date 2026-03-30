@@ -6,6 +6,7 @@ import { PublicVideoSlider } from "@/components/public/PublicVideoSlider";
 import { PublicAnnouncements } from "@/components/public/PublicAnnouncements";
 import { PublicNews } from "@/components/public/PublicNews";
 import { PublicGallery } from "@/components/public/PublicGallery";
+import { PublicLocation } from "@/components/public/PublicLocation";
 import { PublicFooter } from "@/components/public/PublicFooter";
 
 const PublicSchedulePage = () => (
@@ -18,6 +19,7 @@ const PublicSchedulePage = () => (
     <PublicVideoSlider />
     <PublicAnnouncements />
     <PublicNews />
+    <PublicLocation />
     <PublicFooter />
   </div>
 );
