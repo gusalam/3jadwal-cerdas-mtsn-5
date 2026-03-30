@@ -16,19 +16,31 @@ export const PublicInfoGrid = () => {
 
   return (
     <section id="tentang" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      {/* Full-width photo */}
+      {profile?.image_url && (
+        <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
+          <img
+            src={profile.image_url}
+            alt="MTsN 5 Jakarta"
+            className="w-full aspect-video object-cover"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      {/* 3-column card grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Tentang Kami */}
-        <Card className="border-0 shadow-md overflow-hidden group">
-          <div className="h-2 bg-primary" />
-          {profile?.image_url && (
-            <img src={profile.image_url} alt="Tentang Kami" className="w-full h-40 object-cover" loading="lazy" />
-          )}
-          <CardContent className="p-6 space-y-4">
+        <Card className="border-0 shadow-md overflow-hidden group rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+          <div className="h-1.5 bg-primary" />
+          <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
-              <School className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <School className="w-5 h-5 text-primary" />
+              </div>
               <h3 className="text-lg font-bold text-foreground">Tentang Kami</h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
               {profile?.description || "Madrasah Tsanawiyah Negeri 5 Jakarta adalah lembaga pendidikan Islam yang berkomitmen mencetak generasi unggul."}
             </p>
             <Link to="/profil">
@@ -40,13 +52,15 @@ export const PublicInfoGrid = () => {
         </Card>
 
         {/* Info Akademik */}
-        <Card className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground">
-          <CardContent className="p-6 space-y-4">
+        <Card className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+          <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+                <Calendar className="w-5 h-5" />
+              </div>
               <h3 className="text-lg font-bold">Info Akademik</h3>
             </div>
-            <p className="text-sm opacity-90 leading-relaxed">
+            <p className="text-sm opacity-90 leading-relaxed flex-1">
               Tahun ajaran baru telah dimulai. Pantau jadwal pelajaran, kegiatan ekstrakurikuler, dan informasi akademik lainnya melalui platform digital kami.
             </p>
             <Link to="/jadwal-publik">
@@ -58,14 +72,16 @@ export const PublicInfoGrid = () => {
         </Card>
 
         {/* Lokasi */}
-        <Card className="border-0 shadow-md overflow-hidden">
-          <div className="h-2 bg-secondary" />
-          <CardContent className="p-6 space-y-4">
+        <Card className="border-0 shadow-md overflow-hidden rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+          <div className="h-1.5 bg-secondary" />
+          <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-secondary" />
+              <div className="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                <MapPin className="w-5 h-5 text-secondary" />
+              </div>
               <h3 className="text-lg font-bold text-foreground">Lokasi</h3>
             </div>
-            <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="space-y-2 text-sm text-muted-foreground flex-1">
               <p className="leading-relaxed">
                 Jl. Mardani Raya No. 25, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10520
               </p>
