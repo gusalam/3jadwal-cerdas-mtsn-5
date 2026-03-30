@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, School } from "lucide-react";
+import { Calendar, School } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,7 +31,7 @@ export const PublicInfoGrid = () => {
       )}
 
       {/* 3-column card grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Tentang Kami */}
         <Card style={stagger.getItemStyle(0)} className="border-0 shadow-md overflow-hidden group rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
           <div className="h-1.5 bg-primary" />
@@ -73,30 +73,6 @@ export const PublicInfoGrid = () => {
           </CardContent>
         </Card>
 
-        {/* Lokasi */}
-        <Card style={stagger.getItemStyle(2)} className="border-0 shadow-md overflow-hidden rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
-          <div className="h-1.5 bg-secondary" />
-          <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-                <MapPin className="w-5 h-5 text-secondary" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">Lokasi</h3>
-            </div>
-            <div className="space-y-2 text-sm text-muted-foreground flex-1">
-              <p className="leading-relaxed">
-                Jl. Mardani Raya No. 25, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10520
-              </p>
-              <p>📞 (021) 4401833</p>
-              <p>✉️ mtslimajakarta@gmail.com</p>
-            </div>
-            <a href="https://maps.app.goo.gl/4fKTCkq4xWcBSwQMA" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="rounded-full text-xs">
-                Lihat di Maps →
-              </Button>
-            </a>
-          </CardContent>
-        </Card>
       </div>
     </section>
   );
