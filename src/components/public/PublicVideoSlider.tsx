@@ -110,9 +110,9 @@ export const PublicVideoSlider = () => {
         <Card className="border-0 shadow-lg rounded-2xl overflow-hidden bg-card">
           <div className="aspect-video w-full">
             <iframe
-              key={current}
-              src={`https://www.youtube.com/embed/${videos[current].id}?enablejsapi=1&rel=0`}
-              title={videos[current].title}
+              key={video.youtube_id + current}
+              src={`https://www.youtube.com/embed/${video.youtube_id}?enablejsapi=1&rel=0`}
+              title={video.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full"
@@ -120,7 +120,7 @@ export const PublicVideoSlider = () => {
             />
           </div>
           <div className="p-4 text-center">
-            <h3 className="font-semibold text-foreground">{videos[current].title}</h3>
+            <h3 className="font-semibold text-foreground">{video.title}</h3>
           </div>
         </Card>
 
