@@ -23,18 +23,12 @@ export const PublicVideoSlider = () => {
 
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStart = useRef(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const len = videos.length;
-
-  const startAutoplay = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (len <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % len);
-    }, 5000);
-  }, [len]);
 
   const stopAutoplay = useCallback(() => {
     if (intervalRef.current) {
@@ -43,16 +37,44 @@ export const PublicVideoSlider = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!playing && len > 1) startAutoplay();
-    return () => stopAutoplay();
-  }, [playing, startAutoplay, stopAutoplay, len]);
+  const startAutoplay = useCallback(() => {
+    stopAutoplay();
+    if (len <= 1) return;
+    intervalRef.current = setInterval(() => {
+      setCurrent((c) => (c + 1) % len);
+    }, 5000);
+  }, [len, stopAutoplay]);
 
-  useEffect(() => { setCurrent(0); }, [len]);
+  // Auto-start autoplay only when not playing and user hasn't interacted
+  useEffect(() => {
+    if (!playing && !userInteracted && len > 1) {
+      startAutoplay();
+    } else {
+      stopAutoplay();
+    }
+    return () => stopAutoplay();
+  }, [playing, userInteracted, startAutoplay, stopAutoplay, len]);
+
+  // Reset user interaction after 10s of inactivity
+  useEffect(() => {
+    if (!userInteracted || playing) return;
+    const timer = setTimeout(() => {
+      setUserInteracted(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [userInteracted, playing]);
+
+  useEffect(() => {
+    setCurrent(0);
+    setPlaying(false);
+    setUserInteracted(false);
+  }, [len]);
 
   const goTo = (idx: number) => {
     setCurrent(idx);
-    if (!playing) { stopAutoplay(); startAutoplay(); }
+    setPlaying(false);
+    setUserInteracted(true);
+    stopAutoplay();
   };
 
   const prev = () => goTo(current > 0 ? current - 1 : len - 1);
@@ -68,26 +90,47 @@ export const PublicVideoSlider = () => {
     }
   };
 
-  // Listen for YouTube postMessage events
+  // Listen for YouTube postMessage events for play state detection
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
         if (data.event === "onStateChange") {
-          if (data.info === 1) {
+          // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
+          if (data.info === 1 || data.info === 3) {
             setPlaying(true);
+            setUserInteracted(true);
             stopAutoplay();
           } else if (data.info === 2 || data.info === 0) {
             setPlaying(false);
+            // Don't auto-resume immediately, let the 10s timer handle it
           }
         }
       } catch {
-        // ignore
+        // ignore non-JSON messages
       }
     };
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, [stopAutoplay]);
+
+  // Enable YouTube iframe API event listening
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const enableApi = () => {
+      try {
+        iframe.contentWindow?.postMessage(
+          JSON.stringify({ event: "listening", id: "yt-player" }),
+          "*"
+        );
+      } catch {
+        // cross-origin, ignore
+      }
+    };
+    iframe.addEventListener("load", enableApi);
+    return () => iframe.removeEventListener("load", enableApi);
+  }, [current]);
 
   if (videos.length === 0) return null;
   const video = videos[current];
@@ -106,12 +149,12 @@ export const PublicVideoSlider = () => {
       </div>
 
       <div className="relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-        {/* Video card */}
         <Card className="border-0 shadow-lg rounded-2xl overflow-hidden bg-card">
           <div className="aspect-video w-full">
             <iframe
+              ref={iframeRef}
               key={video.youtube_id + current}
-              src={`https://www.youtube.com/embed/${video.youtube_id}?enablejsapi=1&rel=0`}
+              src={`https://www.youtube.com/embed/${video.youtube_id}?enablejsapi=1&rel=0&origin=${window.location.origin}`}
               title={video.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -124,37 +167,41 @@ export const PublicVideoSlider = () => {
           </div>
         </Card>
 
-        {/* Desktop nav buttons */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
-          onClick={prev}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
-          onClick={next}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </Button>
+        {len > 1 && (
+          <>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
+              onClick={prev}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
+              onClick={next}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </>
+        )}
       </div>
 
-      {/* Dots */}
-      <div className="flex justify-center gap-2 mt-4">
-        {videos.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-              i === current ? "bg-primary w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-            }`}
-          />
-        ))}
-      </div>
+      {len > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          {videos.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                i === current ? "bg-primary w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
