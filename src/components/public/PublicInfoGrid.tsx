@@ -4,10 +4,10 @@ import { MapPin, Calendar, School } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
+import { useStaggerFadeIn } from "@/hooks/useStaggerFadeIn";
 
 export const PublicInfoGrid = () => {
-  const fade = useScrollFadeIn();
+  const stagger = useStaggerFadeIn(3, 150);
   const { data: profile } = useQuery({
     queryKey: ["site-profile-preview"],
     queryFn: async () => {
@@ -17,7 +17,7 @@ export const PublicInfoGrid = () => {
   });
 
   return (
-    <section id="tentang" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
+    <section id="tentang" ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
       {/* Full-width photo */}
       {profile?.image_url && (
         <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
@@ -33,7 +33,7 @@ export const PublicInfoGrid = () => {
       {/* 3-column card grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Tentang Kami */}
-        <Card className="border-0 shadow-md overflow-hidden group rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+        <Card style={stagger.getItemStyle(0)} className="border-0 shadow-md overflow-hidden group rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
           <div className="h-1.5 bg-primary" />
           <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
@@ -54,7 +54,7 @@ export const PublicInfoGrid = () => {
         </Card>
 
         {/* Info Akademik */}
-        <Card className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+        <Card style={stagger.getItemStyle(1)} className="border-0 shadow-md overflow-hidden bg-primary text-primary-foreground rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
           <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
@@ -74,7 +74,7 @@ export const PublicInfoGrid = () => {
         </Card>
 
         {/* Lokasi */}
-        <Card className="border-0 shadow-md overflow-hidden rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
+        <Card style={stagger.getItemStyle(2)} className="border-0 shadow-md overflow-hidden rounded-2xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[220px] flex flex-col">
           <div className="h-1.5 bg-secondary" />
           <CardContent className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col">
             <div className="flex items-center gap-2">

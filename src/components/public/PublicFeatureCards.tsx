@@ -2,7 +2,7 @@ import { Bell, CalendarDays, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
+import { useStaggerFadeIn } from "@/hooks/useStaggerFadeIn";
 
 const features = [
   {
@@ -26,12 +26,12 @@ const features = [
 ];
 
 export const PublicFeatureCards = () => {
-  const fade = useScrollFadeIn(0.1);
+  const stagger = useStaggerFadeIn(features.length, 150, 0.1);
   return (
-  <section ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-10 transition-all duration-700 ${fade.className}`}>
+  <section ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-10">
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {features.map((f) => (
-        <Card key={f.title} className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-card">
+      {features.map((f, i) => (
+        <Card key={f.title} className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-card" style={stagger.getItemStyle(i)}>
           <CardContent className="flex items-center gap-4 p-5 sm:p-6">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <f.icon className="w-6 h-6 text-primary" />

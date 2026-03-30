@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
+import { useStaggerFadeIn } from "@/hooks/useStaggerFadeIn";
 
 export const PublicNews = () => {
-  const fade = useScrollFadeIn();
+  const stagger = useStaggerFadeIn(4, 120);
   const { data: posts = [] } = useQuery({
     queryKey: ["public-posts"],
     queryFn: async () => {
@@ -25,15 +25,15 @@ export const PublicNews = () => {
   if (posts.length === 0) return null;
 
   return (
-    <section id="berita" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
+    <section id="berita" ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-1.5 h-8 bg-primary rounded-full" />
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Berita Terbaru</h2>
         <Newspaper className="w-5 h-5 text-primary" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {posts.map((p: any) => (
-          <Card key={p.id} className="border-0 shadow-md overflow-hidden group hover:shadow-xl transition-all hover:-translate-y-1">
+        {posts.map((p: any, i: number) => (
+          <Card key={p.id} style={stagger.getItemStyle(i)} className="border-0 shadow-md overflow-hidden group hover:shadow-xl transition-all hover:-translate-y-1">
             {p.image_url ? (
               <div className="overflow-hidden">
                 <img
