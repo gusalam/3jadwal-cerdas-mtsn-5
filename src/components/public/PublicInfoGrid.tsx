@@ -18,18 +18,6 @@ export const PublicInfoGrid = () => {
 
   return (
     <section id="tentang" ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-      {/* Full-width photo */}
-      {profile?.image_url && (
-        <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
-          <img
-            src={profile.image_url}
-            alt="MTsN 5 Jakarta"
-            className="w-full aspect-video object-cover"
-            loading="lazy"
-          />
-        </div>
-      )}
-
       {/* 3-column card grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Tentang Kami */}
