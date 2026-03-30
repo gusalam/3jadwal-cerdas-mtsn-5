@@ -4,8 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
 
 export const PublicNews = () => {
+  const fade = useScrollFadeIn();
   const { data: posts = [] } = useQuery({
     queryKey: ["public-posts"],
     queryFn: async () => {
@@ -23,7 +25,7 @@ export const PublicNews = () => {
   if (posts.length === 0) return null;
 
   return (
-    <section id="berita" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <section id="berita" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
       <div className="flex items-center gap-3 mb-8">
         <div className="w-1.5 h-8 bg-primary rounded-full" />
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Berita Terbaru</h2>

@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
 
 export const PublicAnnouncements = () => {
+  const fade = useScrollFadeIn();
   const { data: announcements = [] } = useQuery({
     queryKey: ["public-announcements"],
     queryFn: async () => {
@@ -22,7 +24,7 @@ export const PublicAnnouncements = () => {
   if (announcements.length === 0) return null;
 
   return (
-    <section id="pengumuman" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <section id="pengumuman" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
       <div className="flex items-center gap-3 mb-8">
         <div className="w-1.5 h-8 bg-secondary rounded-full" />
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Pengumuman</h2>

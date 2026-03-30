@@ -2,6 +2,7 @@ import { Bell, CalendarDays, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
 
 const features = [
   {
@@ -24,8 +25,10 @@ const features = [
   },
 ];
 
-export const PublicFeatureCards = () => (
-  <section className="max-w-7xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-10">
+export const PublicFeatureCards = () => {
+  const fade = useScrollFadeIn(0.1);
+  return (
+  <section ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-10 transition-all duration-700 ${fade.className}`}>
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {features.map((f) => (
         <Card key={f.title} className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-card">
@@ -58,4 +61,5 @@ export const PublicFeatureCards = () => (
       ))}
     </div>
   </section>
-);
+  );
+};

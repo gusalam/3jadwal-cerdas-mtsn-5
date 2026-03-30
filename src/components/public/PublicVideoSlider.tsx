@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
 
 const videos = [
   {
@@ -19,6 +20,7 @@ const videos = [
 ];
 
 export const PublicVideoSlider = () => {
+  const fade = useScrollFadeIn();
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -86,7 +88,7 @@ export const PublicVideoSlider = () => {
   }, [stopAutoplay]);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <section ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold mb-3">
           <Play className="w-3.5 h-3.5" />
