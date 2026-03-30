@@ -86,6 +86,18 @@ export const PublicInfoGrid = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Full-width photo below cards */}
+      {profile?.image_url && (
+        <div className="mt-8 rounded-2xl overflow-hidden shadow-lg" style={stagger.getItemStyle(3)}>
+          <img
+            src={profile.image_url}
+            alt="MTsN 5 Jakarta"
+            className="w-full aspect-video object-cover"
+            loading="lazy"
+          />
+        </div>
+      )}
     </section>
   );
 };
