@@ -14,10 +14,10 @@ const PublicSchedulePage = () => (
     <PublicHero />
     <PublicFeatureCards />
     <PublicInfoGrid />
+    <PublicGallery />
     <PublicVideoSlider />
     <PublicAnnouncements />
     <PublicNews />
-    <PublicGallery />
     <PublicFooter />
   </div>
 );
