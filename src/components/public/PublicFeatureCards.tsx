@@ -61,4 +61,5 @@ export const PublicFeatureCards = () => {
       ))}
     </div>
   </section>
-);
+  );
+};
