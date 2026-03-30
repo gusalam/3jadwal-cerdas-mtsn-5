@@ -4,10 +4,10 @@ import { MapPin, Calendar, School } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
+import { useStaggerFadeIn } from "@/hooks/useStaggerFadeIn";
 
 export const PublicInfoGrid = () => {
-  const fade = useScrollFadeIn();
+  const stagger = useStaggerFadeIn(3, 150);
   const { data: profile } = useQuery({
     queryKey: ["site-profile-preview"],
     queryFn: async () => {
@@ -17,7 +17,7 @@ export const PublicInfoGrid = () => {
   });
 
   return (
-    <section id="tentang" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
+    <section id="tentang" ref={stagger.ref} className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
       {/* Full-width photo */}
       {profile?.image_url && (
         <div className="mb-8 rounded-2xl overflow-hidden shadow-lg">
