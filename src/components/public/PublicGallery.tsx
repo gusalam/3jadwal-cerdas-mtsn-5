@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageIcon } from "lucide-react";
 import { GalleryLightbox } from "./GalleryLightbox";
+import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
 
 export const PublicGallery = () => {
+  const fade = useScrollFadeIn();
   const { data: photos = [] } = useQuery({
     queryKey: ["public-gallery"],
     queryFn: async () => {
@@ -42,7 +44,7 @@ export const PublicGallery = () => {
   if (photos.length === 0) return null;
 
   return (
-    <section id="galeri" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <section id="galeri" ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
       <div className="flex items-center gap-3 mb-8">
         <div className="w-1.5 h-8 bg-secondary rounded-full" />
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">Galeri Foto</h2>
