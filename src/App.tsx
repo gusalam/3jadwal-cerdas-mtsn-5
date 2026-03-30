@@ -27,6 +27,7 @@ import PengumumanDetailPage from "./pages/PengumumanDetailPage";
 import ProfilPage from "./pages/ProfilPage";
 import ProfilCmsPage from "./pages/ProfilCmsPage";
 import BannerCmsPage from "./pages/BannerCmsPage";
+import VideoCmsPage from "./pages/VideoCmsPage";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/cms-galeri" element={<ProtectedRoute><GaleriPage /></ProtectedRoute>} />
           <Route path="/cms-profil" element={<ProtectedRoute><ProfilCmsPage /></ProtectedRoute>} />
           <Route path="/cms-banner" element={<ProtectedRoute><BannerCmsPage /></ProtectedRoute>} />
+          <Route path="/cms-video" element={<ProtectedRoute><VideoCmsPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
