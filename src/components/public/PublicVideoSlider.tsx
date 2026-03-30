@@ -3,35 +3,38 @@ import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
-
-const videos = [
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Profil MTsN 5 Jakarta",
-  },
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Kegiatan Belajar Mengajar",
-  },
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Ekstrakurikuler & Prestasi",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const PublicVideoSlider = () => {
   const fade = useScrollFadeIn();
+
+  const { data: videos = [] } = useQuery({
+    queryKey: ["public-videos"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("videos")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+      return (data ?? []) as { id: string; title: string; youtube_id: string }[];
+    },
+  });
+
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStart = useRef(0);
 
+  const len = videos.length;
+
   const startAutoplay = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
+    if (len <= 1) return;
     intervalRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % videos.length);
+      setCurrent((c) => (c + 1) % len);
     }, 5000);
-  }, []);
+  }, [len]);
 
   const stopAutoplay = useCallback(() => {
     if (intervalRef.current) {
@@ -41,20 +44,19 @@ export const PublicVideoSlider = () => {
   }, []);
 
   useEffect(() => {
-    if (!playing) startAutoplay();
+    if (!playing && len > 1) startAutoplay();
     return () => stopAutoplay();
-  }, [playing, startAutoplay, stopAutoplay]);
+  }, [playing, startAutoplay, stopAutoplay, len]);
+
+  useEffect(() => { setCurrent(0); }, [len]);
 
   const goTo = (idx: number) => {
     setCurrent(idx);
-    if (!playing) {
-      stopAutoplay();
-      startAutoplay();
-    }
+    if (!playing) { stopAutoplay(); startAutoplay(); }
   };
 
-  const prev = () => goTo(current > 0 ? current - 1 : videos.length - 1);
-  const next = () => goTo((current + 1) % videos.length);
+  const prev = () => goTo(current > 0 ? current - 1 : len - 1);
+  const next = () => goTo((current + 1) % len);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStart.current = e.touches[0].clientX;
@@ -86,6 +88,9 @@ export const PublicVideoSlider = () => {
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, [stopAutoplay]);
+
+  if (videos.length === 0) return null;
+  const video = videos[current];
 
   return (
     <section ref={fade.ref} className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 transition-all duration-700 ${fade.className}`}>
