@@ -43,7 +43,7 @@ export const PublicFooter = () => (
             </a>
             <div className="flex items-start gap-2 opacity-80">
               <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>Jl. Mardani Raya No. 25, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10520</span>
+              <span>Jl. Sungai Landak No. 10, Cilincing, Kec. Cilincing, Jakarta Utara, DKI Jakarta 14120</span>
             </div>
           </div>
         </div>
