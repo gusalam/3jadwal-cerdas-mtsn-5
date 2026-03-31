@@ -77,10 +77,10 @@ export const PublicNavbar = () => {
             ))}
           </div>
 
-          {/* Sidebar trigger (hamburger) */}
+          {/* Sidebar trigger (hamburger) - mobile only */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-primary-foreground hover:bg-primary-foreground/10">
+              <Button variant="ghost" size="sm" className="lg:hidden h-9 w-9 p-0 text-primary-foreground hover:bg-primary-foreground/10">
                 <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>

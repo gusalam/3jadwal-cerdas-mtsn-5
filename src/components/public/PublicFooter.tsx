@@ -43,7 +43,7 @@ export const PublicFooter = () => (
             </a>
             <div className="flex items-start gap-2 opacity-80">
               <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>Jl. Mardani Raya No. 25, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10520</span>
+              <span>Jl. Sungai Landak No. 10, Cilincing, Kec. Cilincing, Jakarta Utara, DKI Jakarta 14120</span>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@ export const PublicFooter = () => (
           {/* Map embed */}
           <div className="rounded-xl overflow-hidden border border-primary-foreground/10">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.86589!3d-6.175110!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b12d%3A0x3d2ad6e1e0e9bcc8!2sMTsN%205%20Jakarta!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2!2d106.9266!3d-6.1166!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a20417e0c67d5%3A0x862c0025527ba791!2sMTs%20Negeri%205!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
               className="w-full h-32 border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
