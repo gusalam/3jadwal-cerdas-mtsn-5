@@ -95,15 +95,21 @@ export const PublicVideoSlider = () => {
     const handler = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        if (data.event === "onStateChange") {
-          // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
-          if (data.info === 1 || data.info === 3) {
+        // YouTube sends state changes as {event: "onStateChange", info: N}
+        // or nested in {event: "infoDelivery", info: {playerState: N}}
+        const state = data?.event === "onStateChange"
+          ? data.info
+          : data?.info?.playerState;
+
+        if (state !== undefined) {
+          if (state === 1 || state === 3) {
+            // Playing or buffering
             setPlaying(true);
             setUserInteracted(true);
             stopAutoplay();
-          } else if (data.info === 2 || data.info === 0) {
+          } else if (state === 2 || state === 0 || state === -1) {
+            // Paused, ended, or unstarted
             setPlaying(false);
-            // Don't auto-resume immediately, let the 10s timer handle it
           }
         }
       } catch {
