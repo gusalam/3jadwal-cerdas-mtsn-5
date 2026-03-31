@@ -77,7 +77,7 @@ export const PublicFooter = () => (
           {/* Map embed */}
           <div className="rounded-xl overflow-hidden border border-primary-foreground/10">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4!2d106.8718!3d-6.1803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f4330bfc0f63%3A0x301576d14feb8c0!2sMTsN+5+Jakarta!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.2!2d106.9266!3d-6.1166!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a20417e0c67d5%3A0x862c0025527ba791!2sMTs%20Negeri%205!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
               className="w-full h-32 border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
