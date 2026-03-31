@@ -1,27 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useStaggerFadeIn } from "@/hooks/useStaggerFadeIn";
+import { usePublicPosts } from "@/hooks/usePublicData";
+import { NewsSkeleton } from "./SectionSkeleton";
+import { SectionError } from "./SectionError";
 
 export const PublicNews = () => {
   const stagger = useStaggerFadeIn(4, 120);
-  const { data: posts = [] } = useQuery({
-    queryKey: ["public-posts"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("is_published", true)
-        .order("created_at", { ascending: false })
-        .limit(4);
-      return data ?? [];
-    },
-    refetchInterval: 30000,
-  });
+  const { data: posts = [], isLoading, isError } = usePublicPosts();
 
+  if (isLoading) return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <NewsSkeleton />
+    </section>
+  );
+  if (isError) return <SectionError message="Berita tidak tersedia" />;
   if (posts.length === 0) return null;
 
   return (
@@ -32,16 +27,11 @@ export const PublicNews = () => {
         <Newspaper className="w-5 h-5 text-primary" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {posts.map((p: any, i: number) => (
+        {posts.map((p, i) => (
           <Card key={p.id} style={stagger.getItemStyle(i)} className="border-0 shadow-md overflow-hidden group hover:shadow-xl transition-all hover:-translate-y-1">
             {p.image_url ? (
               <div className="overflow-hidden">
-                <img
-                  src={p.image_url}
-                  alt={p.title}
-                  className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
+                <img src={p.image_url} alt={p.title} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
               </div>
             ) : (
               <div className="w-full h-44 bg-muted flex items-center justify-center">
