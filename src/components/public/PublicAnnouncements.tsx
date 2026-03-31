@@ -1,26 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
+import { usePublicAnnouncements } from "@/hooks/usePublicData";
+import { AnnouncementsSkeleton } from "./SectionSkeleton";
+import { SectionError } from "./SectionError";
 
 export const PublicAnnouncements = () => {
   const fade = useScrollFadeIn();
-  const { data: announcements = [] } = useQuery({
-    queryKey: ["public-announcements"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("announcements")
-        .select("*")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(5);
-      return data ?? [];
-    },
-    refetchInterval: 30000,
-  });
+  const { data: announcements = [], isLoading, isError } = usePublicAnnouncements();
 
+  if (isLoading) return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <AnnouncementsSkeleton />
+    </section>
+  );
+  if (isError) return <SectionError message="Pengumuman tidak tersedia" />;
   if (announcements.length === 0) return null;
 
   return (
@@ -31,7 +26,7 @@ export const PublicAnnouncements = () => {
         <Bell className="w-5 h-5 text-secondary" />
       </div>
       <div className="space-y-3">
-        {announcements.map((a: any) => (
+        {announcements.map((a) => (
           <Link key={a.id} to={`/pengumuman/${a.id}`}>
             <Card className="border-0 shadow-sm border-l-4 border-l-secondary hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-5">

@@ -3,23 +3,13 @@ import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useScrollFadeIn } from "@/hooks/useScrollFadeIn";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { usePublicVideos } from "@/hooks/usePublicData";
+import { VideoSkeleton } from "./SectionSkeleton";
+import { SectionError } from "./SectionError";
 
 export const PublicVideoSlider = () => {
   const fade = useScrollFadeIn();
-
-  const { data: videos = [] } = useQuery({
-    queryKey: ["public-videos"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("videos")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-      return (data ?? []) as { id: string; title: string; youtube_id: string }[];
-    },
-  });
+  const { data: videos = [], isLoading, isError } = usePublicVideos();
 
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -31,114 +21,72 @@ export const PublicVideoSlider = () => {
   const len = videos.length;
 
   const stopAutoplay = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
   }, []);
 
   const startAutoplay = useCallback(() => {
     stopAutoplay();
     if (len <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % len);
-    }, 5000);
+    intervalRef.current = setInterval(() => setCurrent((c) => (c + 1) % len), 5000);
   }, [len, stopAutoplay]);
 
-  // Auto-start autoplay only when not playing and user hasn't interacted
   useEffect(() => {
-    if (!playing && !userInteracted && len > 1) {
-      startAutoplay();
-    } else {
-      stopAutoplay();
-    }
+    if (!playing && !userInteracted && len > 1) startAutoplay();
+    else stopAutoplay();
     return () => stopAutoplay();
   }, [playing, userInteracted, startAutoplay, stopAutoplay, len]);
 
-  // Reset user interaction after 10s of inactivity
   useEffect(() => {
     if (!userInteracted || playing) return;
-    const timer = setTimeout(() => {
-      setUserInteracted(false);
-    }, 10000);
+    const timer = setTimeout(() => setUserInteracted(false), 10000);
     return () => clearTimeout(timer);
   }, [userInteracted, playing]);
 
-  useEffect(() => {
-    setCurrent(0);
-    setPlaying(false);
-    setUserInteracted(false);
-  }, [len]);
+  useEffect(() => { setCurrent(0); setPlaying(false); setUserInteracted(false); }, [len]);
 
-  const goTo = (idx: number) => {
-    setCurrent(idx);
-    setPlaying(false);
-    setUserInteracted(true);
-    stopAutoplay();
-  };
-
+  const goTo = (idx: number) => { setCurrent(idx); setPlaying(false); setUserInteracted(true); stopAutoplay(); };
   const prev = () => goTo(current > 0 ? current - 1 : len - 1);
   const next = () => goTo((current + 1) % len);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientX;
-  };
+  const handleTouchStart = (e: React.TouchEvent) => { touchStart.current = e.touches[0].clientX; };
   const handleTouchEnd = (e: React.TouchEvent) => {
     const diff = touchStart.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      diff > 0 ? next() : prev();
-    }
+    if (Math.abs(diff) > 50) diff > 0 ? next() : prev();
   };
 
-  // Listen for YouTube postMessage events for play state detection
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        // YouTube sends state changes as {event: "onStateChange", info: N}
-        // or nested in {event: "infoDelivery", info: {playerState: N}}
-        const state = data?.event === "onStateChange"
-          ? data.info
-          : data?.info?.playerState;
-
+        const state = data?.event === "onStateChange" ? data.info : data?.info?.playerState;
         if (state !== undefined) {
-          if (state === 1 || state === 3) {
-            // Playing or buffering
-            setPlaying(true);
-            setUserInteracted(true);
-            stopAutoplay();
-          } else if (state === 2 || state === 0 || state === -1) {
-            // Paused, ended, or unstarted
-            setPlaying(false);
-          }
+          if (state === 1 || state === 3) { setPlaying(true); setUserInteracted(true); stopAutoplay(); }
+          else if (state === 2 || state === 0 || state === -1) { setPlaying(false); }
         }
-      } catch {
-        // ignore non-JSON messages
-      }
+      } catch { /* ignore */ }
     };
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, [stopAutoplay]);
 
-  // Enable YouTube iframe API event listening
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
     const enableApi = () => {
-      try {
-        iframe.contentWindow?.postMessage(
-          JSON.stringify({ event: "listening", id: "yt-player" }),
-          "*"
-        );
-      } catch {
-        // cross-origin, ignore
-      }
+      try { iframe.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: "yt-player" }), "*"); } catch { /* ignore */ }
     };
     iframe.addEventListener("load", enableApi);
     return () => iframe.removeEventListener("load", enableApi);
   }, [current]);
 
+  if (isLoading) return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <VideoSkeleton />
+    </section>
+  );
+  if (isError) return <SectionError message="Video tidak tersedia" />;
   if (videos.length === 0) return null;
+
   const video = videos[current];
 
   return (
@@ -175,20 +123,10 @@ export const PublicVideoSlider = () => {
 
         {len > 1 && (
           <>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
-              onClick={prev}
-            >
+            <Button variant="outline" size="icon" className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted" onClick={prev}>
               <ChevronLeft className="w-5 h-5" />
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted"
-              onClick={next}
-            >
+            <Button variant="outline" size="icon" className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 hidden md:flex h-10 w-10 rounded-full bg-card shadow-lg border-0 hover:bg-muted" onClick={next}>
               <ChevronRight className="w-5 h-5" />
             </Button>
           </>
@@ -198,13 +136,7 @@ export const PublicVideoSlider = () => {
       {len > 1 && (
         <div className="flex justify-center gap-2 mt-4">
           {videos.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                i === current ? "bg-primary w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              }`}
-            />
+            <button key={i} onClick={() => goTo(i)} className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === current ? "bg-primary w-6" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"}`} />
           ))}
         </div>
       )}
